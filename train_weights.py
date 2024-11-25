@@ -60,10 +60,14 @@ if __name__ == '__main__':
     d = 8
     hashmap_size = 10
     obj_no = 12
-    no_of_rotations = 4
+    no_of_rotations = 2
     mode = 'normal'
     obj_path_pre = 'rotated_objs'
-    obj_path_pre_list = [obj_path_pre+'/',obj_path_pre+'_180/',obj_path_pre+'_270/',obj_path_pre+'_360/']
+    obj_path_pre_list = [obj_path_pre+'/'
+                         ,obj_path_pre+'_180/'
+                        #  ,obj_path_pre+'_270/'
+                        #  ,obj_path_pre+'_360/'
+                         ]
     workspace1 = f'hash_workspace_obj{obj_no}_{n}_{d}_{hashmap_size}/'
     _n = 1
     from sdf.network_tcnn import SDFNetwork            
@@ -131,13 +135,13 @@ if __name__ == '__main__':
     # for i in range(_n):
     for j in range(no_of_rotations):
         for i in [obj_no]:
-            train_dataset = SDFDataset(obj_path_pre_list[j]+f'{i}.obj', size=100, num_samples=2**18,sample_ratio_n=n,sample_ratio_d=d)
+            train_dataset = SDFDataset(obj_path_pre_list[j]+f'{i}.obj', size=100, num_samples=2**4,sample_ratio_n=n,sample_ratio_d=d)
             train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=1, shuffle=True)
             train_datasets.append(train_dataset)
             train_loaders.append(train_loader)
         # for i in range(_n):
         for i in [obj_no]:  
-            valid_dataset = SDFDataset(obj_path_pre_list[j]+f'{i}.obj', size=100, num_samples=2**18,sample_ratio_n=n,sample_ratio_d=d) # just a dummy
+            valid_dataset = SDFDataset(obj_path_pre_list[j]+f'{i}.obj', size=100, num_samples=2**4,sample_ratio_n=n,sample_ratio_d=d) # just a dummy
             valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=1)
             valid_datasets.append(valid_dataset)
             valid_loaders.append(train_loader)
@@ -169,7 +173,7 @@ if __name__ == '__main__':
 
     scheduler = lambda optimizer: optim.lr_scheduler.StepLR(optimizer, step_size=4, gamma=0.1)
     # scheduler = lambda optimizer: torch.optim.lr_scheduler.MultiStepLR(optimizer,[6,6,4,4,2], gamma=0.1, last_epoch=-1)
-    subset_n = 4
+    subset_n = 2
     trainer = Trainer('ngp', _n, models,W,N,M, B1,workspace=workspace1,enc_optimizer=enc_optimizer,  net_optimizer=net_optimizer, w_optimizer = w_optimizer, criterion=criterion, ema_decay=0.95, fp16=False, lr_scheduler=scheduler, use_checkpoint='latest', eval_interval=1,scheduler_update_every_step=False)
     trainer.w_train(mode,True,train_loaders, valid_loaders,1000,subset_n)
     # w_state_dict = w.state_dict()

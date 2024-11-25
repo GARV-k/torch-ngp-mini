@@ -507,6 +507,7 @@ class Trainer(object):
         global loader_epoch_loss
         w = self.W
         for j, loader_iter in enumerate(subset_loaders_iter):
+                print(j)
                 data = next(loader_iter)
                 #model = self.models[j]/    
                 data = self.prepare_data(data)
